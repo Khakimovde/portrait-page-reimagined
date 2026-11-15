@@ -62,7 +62,7 @@ CREATE TABLE public.lootzy_mining (
   rate_uzs integer not null,
   payout_cents bigint not null,
   started_at timestamp with time zone not null default now(),
-  ends_at timestamp with time zone not null default interval '48 hours',
+  ends_at timestamp with time zone not null default (now() + interval '48 hours'),
   paid_at timestamp with time zone
 );
 
