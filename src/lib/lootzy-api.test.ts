@@ -20,7 +20,7 @@ describe("admin API security", () => {
     const r = await post({ action: "grant", initData: "forged", target: 1, adminId: 5326022510, amount: 500 });
     expect(r.status).toBe(401);
   });
-  it.each(["overview", "search", "detail", "grant", "decision", "bonus_add", "bonus_draw", "mining_start"])("blocks non-admin %s before accessing database", async action => {
+  it.each(["overview", "search", "detail", "grant", "decision", "bonus_add", "bonus_draw", "mining_start", "admin_withdraw"])("blocks non-admin %s before accessing database", async action => {
     vi.mocked(verifyTelegramProfile).mockResolvedValueOnce({ id: 123, first_name: "User" });
     const r = await post({ action, initData: "valid-non-admin" });
     expect(r.status).toBe(403);

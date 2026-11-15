@@ -19,7 +19,7 @@ describe("admin grant flow", () => {
     fireEvent.click(screen.getByRole("button", { name: "pink kalit" }));
     fireEvent.click(screen.getByRole("button", { name: "Qo‘shish" }));
     await waitFor(() => expect(cloudCall).toHaveBeenLastCalledWith("test-only", expect.objectContaining({ action: "grant", target: 123, amount: 525, quantity: 3, color: "pink" })));
-    expect(await screen.findByText("$5.25")).toBeInTheDocument();
+    expect(await screen.findByText("63 000 so‘m")).toBeInTheDocument();
     expect(screen.getByText("3")).toBeInTheDocument();
   });
 });
