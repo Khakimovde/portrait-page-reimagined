@@ -14,12 +14,12 @@ describe("admin grant flow", () => {
     fireEvent.change(screen.getByLabelText("ID yoki username"), { target: { value: "123" } });
     fireEvent.click(screen.getByRole("button", { name: "Qidirish" }));
     fireEvent.click(await screen.findByRole("button", { name: /Test User/ }));
-    fireEvent.change(await screen.findByLabelText("Dollar miqdori"), { target: { value: "5.25" } });
+    fireEvent.change(await screen.findByLabelText("So‘m miqdori"), { target: { value: "63000" } });
     fireEvent.change(screen.getByLabelText("Kalit soni"), { target: { value: "3" } });
     fireEvent.click(screen.getByRole("button", { name: "pink kalit" }));
     fireEvent.click(screen.getByRole("button", { name: "Qo‘shish" }));
     await waitFor(() => expect(cloudCall).toHaveBeenLastCalledWith("test-only", expect.objectContaining({ action: "grant", target: 123, amount: 525, quantity: 3, color: "pink" })));
-    expect(await screen.findByText("$5.25")).toBeInTheDocument();
+    expect(await screen.findByText("63 000 so‘m")).toBeInTheDocument();
     expect(screen.getByText("3")).toBeInTheDocument();
   });
 });

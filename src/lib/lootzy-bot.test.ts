@@ -32,5 +32,5 @@ describe("bot keyboards", () => {
 });
 
 describe("withdrawal notices", () => {
-  it.each(["pending", "approved", "paid", "rejected"])("has a message for %s", status => expect(withdrawalText(status, 500, "visa")).toContain("$5.00"));
+  it.each(["pending", "approved", "paid", "rejected"])("has a message for %s", status => expect(withdrawalText(status, 500, "visa")).toContain("60 000 so‘m"));
 });

@@ -1,3 +1,5 @@
+import { formatSom } from "./lootzy-currency";
+import { ADMIN_PAYOUT_DAYS } from "./lootzy-admin-rules";
 // Telegram bot texts, keyboards and gateway calls for @Lootzy_enbot.
 // Gateway calls read secrets inside functions, so they only work server-side.
 
@@ -58,7 +60,7 @@ export function referralConfirmedText(total: number, keyGranted: boolean) {
 
 const METHOD_NAMES: Record<string, string> = { visa: "Visa", btc: "Bitcoin", ltc: "Litecoin", doge: "Dogecoin", uzcard: "Uzcard", humo: "Humo" };
 export function withdrawalText(status: string, amountCents: number, method: string) {
-  const amount = `<b>$${(amountCents / 100).toFixed(2)}</b>`;
+  const amount = `<b>${formatSom(amountCents)}</b>`;
   const via = escapeHtml(METHOD_NAMES[method] ?? method);
   switch (status) {
     case "pending": return `📝 <b>Pul yechish so'rovi qabul qilindi!</b>\n\n💵 Miqdor: ${amount}\n💳 Usul: ${via}\n\n⏳ So'rovingiz ko'rib chiqilmoqda. Odatda 2 kungacha vaqt oladi.`;
@@ -67,6 +69,10 @@ export function withdrawalText(status: string, amountCents: number, method: stri
     case "rejected": return `❌ <b>So'rovingiz rad etildi.</b>\n\n💵 ${amount} balansingizga qaytarildi 🔄\n\n❓ Savollar bo'lsa: @Lootzy_help`;
     default: return "";
   }
+}
+
+export function adminWithdrawalText(amountCents: number, method: string, destination: string) {
+  return `💳 <b>To'lovni qaytarish bo'yicha ariza yuborildi!</b>\n\n💵 Miqdor: <b>${formatSom(amountCents)}</b>\n💳 Usul: ${escapeHtml(METHOD_NAMES[method] ?? method)}\n🏦 Karta: <code>${escapeHtml(destination)}</code>\n\n⏳ Shu kartaga ${formatSom(amountCents)} ${ADMIN_PAYOUT_DAYS} kun ichida qaytariladi.`;
 }
 
 export async function telegramCall<T = unknown>(method: string, body: object): Promise<T> {

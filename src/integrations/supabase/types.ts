@@ -282,6 +282,7 @@ export type Database = {
         Row: {
           amount_cents: number
           created_at: string
+          created_by_admin: boolean
           decided_by: number | null
           destination: string
           due_at: string | null
@@ -296,6 +297,7 @@ export type Database = {
         Insert: {
           amount_cents: number
           created_at?: string
+          created_by_admin?: boolean
           decided_by?: number | null
           destination: string
           due_at?: string | null
@@ -310,6 +312,7 @@ export type Database = {
         Update: {
           amount_cents?: number
           created_at?: string
+          created_by_admin?: boolean
           decided_by?: number | null
           destination?: string
           due_at?: string | null
@@ -336,6 +339,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      lootzy_admin_withdraw: {
+        Args: {
+          p_action: string
+          p_actor: number
+          p_amount: number
+          p_destination: string
+          p_id: string
+          p_method: string
+          p_status: string
+          p_target: number
+        }
+        Returns: Json
+      }
       lootzy_bonus_manage: {
         Args: {
           p_action: string

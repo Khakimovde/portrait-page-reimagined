@@ -26,3 +26,6 @@
 - [x] Rebuilt drizzle/migrations/0001_migration.sql from the copy's live database after the remix dropped it; 79 tests passed.
 - [x] Linked Telegram connection to this copy, moved bot webhook and menu button to portrait-page-reimagined.lovable.app; live webhook rejects forged calls (401).
 - [ ] BotFather Main Mini App URL (for startapp links) — needs BotFather access.
+- [x] Removed mining and the bonus-case promotion from the home screen and admin panel; ad watching is the main menu.
+- [x] All amounts shown and typed in so'm (1$ = 12 000 so'm); bot messages too.
+- [x] Admin can create a withdrawal (refund) request by Telegram ID, amount and card; 5-day countdown, no balance deduction, user sees it on login and gets a bot message.

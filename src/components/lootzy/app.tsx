@@ -11,12 +11,11 @@ import avatar from "@/assets/avatar.jpg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import AdminPanel from "./admin-panel";
-import Mining, { MiningBanner } from "./mining";
-import MiningPromotion, { MiningPromotionBanner } from "./mining-promotion";
 import Countdown from "./countdown";
 import { openPayment } from "@/lib/lootzy-mining-rules";
 import { cloudCall, type CloudResult, type Withdrawal } from "@/lib/lootzy-cloud";
-import { dollarsToCents, STATUS_LABELS } from "@/lib/lootzy-admin-rules";
+import { STATUS_LABELS } from "@/lib/lootzy-admin-rules";
+import { dollarsSom, formatSom, somToCents } from "@/lib/lootzy-currency";
 
 import { CASES, EMPTY_KEYS, BOT_USERNAME, SUPPORT_URL, referralLink, adsToday, ADS_PER_KEY, MAX_DAILY_ADS, type Color, type AdDay, CASE_RANGES, rollReward, WITHDRAW_METHODS, PAYOUT_DAYS } from "@/lib/lootzy-rules";
 import { showNextAd, preloadAds } from "@/lib/ads";
@@ -48,7 +47,7 @@ export default function App() {
   </div></div>;
 }
 
-type Screen = "home" | "keys" | "wallet" | "referral" | "profile" | "case" | "win" | "keydetail" | "admin" | "mining" | "promotion";
+type Screen = "home" | "keys" | "wallet" | "referral" | "profile" | "case" | "win" | "keydetail" | "admin";
 
 const Key = ({ c, size = 22 }: { c: Color; size?: number }) => (
   <KeyRound className={`k-${c}`} size={size} strokeWidth={2.6} />
@@ -127,9 +126,7 @@ function LootzyApp({ profile, initData }: { profile: TelegramProfile; initData: 
       <div className="relative w-full max-w-[430px] min-h-screen pb-20">
         {cloudError && <div role="alert" className="p-4 text-sm text-destructive">{cloudError}<Button variant="ghost" onClick={() => void sync()}>Qayta urinish</Button></div>}
         {screen === "admin" && isAdmin && <AdminPanel initData={initData} back={() => go("profile")} changed={() => void sync()} />}
-        {screen === "home" && <HomeS promotion={() => go("promotion")} clockOffset={clockOffset} mining={() => go("mining")} balance={balance} ads={ads} reportedAds={reportedAds} busy={adBusy} msg={adMsg} onWatch={() => void watchAd()} />}
-        {screen === "promotion" && <MiningPromotion back={() => go("home")} offset={clockOffset}/>}
-        {screen === "mining" && <Mining initData={initData} back={() => go("home")} changed={() => void sync()} />}
+        {screen === "home" && <HomeS balance={balance} ads={ads} reportedAds={reportedAds} busy={adBusy} msg={adMsg} onWatch={() => void watchAd()} />}
         {screen === "keys" && <KeysS keys={keys} back={() => go("home")} pick={(c) => { setSel(c); go("case"); }} detail={(c) => { setSel(c); go("keydetail"); }} />}
         {screen === "case" && <CaseS c={sel} n={keys[sel]} close={() => go("keys")} open={openCase} done={() => go("win")} />}
         {screen === "win" && <WinS v={won} balance={balance} close={() => go("keys")} />}
@@ -162,7 +159,7 @@ function Header({ title, back, right }: { title: string; back?: () => void; righ
   );
 }
 
-function HomeS({ balance, ads, reportedAds, busy, msg, onWatch, mining, promotion, clockOffset }: { balance: number; ads: number; reportedAds: number; busy: boolean; msg: string; onWatch: () => void; mining: () => void; promotion: () => void; clockOffset: number }) {
+function HomeS({ balance, ads, reportedAds, busy, msg, onWatch }: { balance: number; ads: number; reportedAds: number; busy: boolean; msg: string; onWatch: () => void }) {
   const limit = reportedAds >= MAX_DAILY_ADS;
   const progress = ads % ADS_PER_KEY;
   const keysToday = Math.floor(ads / ADS_PER_KEY);
@@ -172,7 +169,7 @@ function HomeS({ balance, ads, reportedAds, busy, msg, onWatch, mining, promotio
         <img src={hero} alt="Treasure" className="absolute inset-0 h-full w-full object-cover" width={1024} height={768} />
         <div className="relative flex items-start justify-between p-4">
           <span className="grid h-9 w-9 place-items-center rounded-full btn-red"><Bell size={18} /></span>
-          <span className="flex items-center gap-1 rounded-full btn-blue px-3 py-1 text-sm font-extrabold"><KeyRound size={14} /> ${balance.toFixed(2)}</span>
+          <span className="flex items-center gap-1 rounded-full btn-blue px-3 py-1 text-sm font-extrabold"><KeyRound size={14} /> {dollarsSom(balance)}</span>
         </div>
         <div className="relative text-center">
           <div className="title-logo text-5xl">Lootzy</div>
@@ -180,8 +177,6 @@ function HomeS({ balance, ads, reportedAds, busy, msg, onWatch, mining, promotio
         </div>
       </div>
       <div className="space-y-3 px-4 pt-4">
-        <MiningBanner open={mining} />
-        <MiningPromotionBanner open={promotion} offset={clockOffset}/>
         <Button variant="ghost" disabled={busy || limit} onClick={onWatch} className="watch-ad watch-card h-auto flex w-full items-center gap-3 whitespace-normal rounded-2xl p-4 text-left shadow-xl disabled:opacity-70">
           <span className="grid h-14 w-14 shrink-0 place-items-center rounded-full btn-green">{busy ? <Loader2 className="animate-spin" size={26} /> : <Play fill="currentColor" size={26} />}</span>
           <span className="min-w-0 flex-1"><b className="block text-base">{limit ? "Bugungi limit tugadi" : busy ? "Reklama ochilmoqda..." : "Reklama ko‘rish"}</b><span className="text-xs opacity-90">{limit ? "Ertaga 00:00 (Toshkent) da yangilanadi" : "10 ta reklama = 1 ta red kalit"}</span></span>
@@ -281,7 +276,7 @@ function CaseS({ c, n, close, open, done }: { c: Color; n: number; close: () => 
           {strip.map((v, i) => (
             <div key={i} style={{ width: ITEM_W }} className="shrink-0 px-1">
               <div className={`bg-${c}-soft flex h-20 flex-col items-center justify-center rounded-xl text-xs font-extrabold text-foreground`}>
-                <img src={coins} alt="" className="h-9 w-9" />${v.toFixed(2)}
+                <img src={coins} alt="" className="h-9 w-9" />{dollarsSom(v)}
               </div>
             </div>
           ))}
@@ -294,7 +289,7 @@ function CaseS({ c, n, close, open, done }: { c: Color; n: number; close: () => 
       </Button>
       {error && <p role="alert" className="mt-3 text-sm text-destructive">{error}</p>}
       <div className="glass mt-5 flex items-center gap-3 rounded-2xl px-4 py-3 text-sm">
-        <img src={coins} alt="" className="h-8 w-8" /><span className="flex-1">Possible reward</span><b>${min.toFixed(2)} – ${max.toFixed(2)}</b>
+        <img src={coins} alt="" className="h-8 w-8" /><span className="flex-1">Possible reward</span><b>{dollarsSom(min)} – {dollarsSom(max)}</b>
       </div>
     </div>
   );
@@ -308,11 +303,11 @@ function WinS({ v, balance, close }: { v: number; balance: number; close: () => 
       <p className="font-bold">You won</p>
       <div className="pop burst mx-auto mt-4 grid h-64 w-64 place-items-center rounded-full">
         <img src={coins} alt="Coins" className="h-40 w-40" />
-        <div className="glass -mt-6 rounded-full px-8 py-2 text-3xl font-extrabold">${v.toFixed(2)}</div>
+        <div className="glass -mt-6 rounded-full px-8 py-2 text-3xl font-extrabold">{dollarsSom(v)}</div>
       </div>
       <Button variant="ghost" onClick={close} className="mt-6 w-full rounded-full border-2 border-[var(--app-red)] py-3 text-lg font-extrabold">Cool!</Button>
       <div className="glass mx-auto mt-5 flex w-fit items-center gap-3 rounded-2xl px-5 py-3 text-left">
-        <img src={walletImg} alt="" className="h-12 w-12" /><div><div className="text-sm">New balance</div><b className="text-xl">${balance.toFixed(2)}</b></div>
+        <img src={walletImg} alt="" className="h-12 w-12" /><div><div className="text-sm">New balance</div><b className="text-xl">{dollarsSom(balance)}</b></div>
       </div>
       <Chest c="red" className="mx-auto mt-6 h-40 w-40" />
     </div>
@@ -342,7 +337,7 @@ function WalletS({ balance, back, withdrawals, withdraw, clockOffset }: { clockO
       <div className="watch-card relative mx-3 overflow-hidden rounded-2xl p-4">
         <img src={walletImg} alt="" className="absolute -right-2 -top-2 h-28 w-28" />
         <div className="text-sm">Your Balance</div>
-        <div className="text-3xl font-extrabold">${balance.toFixed(2)}</div>
+        <div className="text-3xl font-extrabold">{dollarsSom(balance)}</div>
       </div>
       <div className="app-light mx-3 mt-3 rounded-2xl p-3">
         <h2 className="mb-2 font-extrabold">Withdraw Methods</h2>
@@ -351,18 +346,18 @@ function WalletS({ balance, back, withdrawals, withdraw, clockOffset }: { clockO
             <Button variant="ghost" key={x.id} onClick={() => setPicked(x.id)} className={`lcard h-auto flex-col gap-1 p-2 ${picked === x.id ? "ring-2 ring-primary" : ""}`}>
               <BrandLogo id={x.id} />
               <b className="text-xs">{x.name}</b>
-              <span className="text-[10px] text-muted-foreground">Min ${x.min.toFixed(2)}</span>
+              <span className="text-[10px] text-muted-foreground">Min {dollarsSom(x.min)}</span>
             </Button>
           ))}
         </div>
         <p className="mt-3 text-center text-xs text-muted-foreground">Pul tushish vaqti: {PAYOUT_DAYS} kun</p>
         {m && (
           <div className="lcard mt-3 p-3 text-sm">
-            <b>{m.name}</b> · minimal ${m.min.toFixed(2)} · {PAYOUT_DAYS} kun ichida
-            <form className="mt-3 space-y-3" onSubmit={async e => { e.preventDefault(); setBusy(true); setMessage(""); try { await withdraw(m.id, dollarsToCents(amount), destination); setMessage("So‘rov yuborildi"); setAmount(""); setDestination(""); } catch(err) { setMessage(err instanceof Error ? err.message : "So‘rov yuborilmadi"); } finally { setBusy(false); } }}>
-              <label className="block">Miqdor ($)<Input aria-label="Yechish miqdori" inputMode="decimal" required value={amount} onChange={e => setAmount(e.target.value)} /></label>
+            <b>{m.name}</b> · minimal {dollarsSom(m.min)} · {PAYOUT_DAYS} kun ichida
+            <form className="mt-3 space-y-3" onSubmit={async e => { e.preventDefault(); setBusy(true); setMessage(""); try { await withdraw(m.id, somToCents(amount), destination); setMessage("So‘rov yuborildi"); setAmount(""); setDestination(""); } catch(err) { setMessage(err instanceof Error ? err.message : "So‘rov yuborilmadi"); } finally { setBusy(false); } }}>
+              <label className="block">Miqdor (so‘m)<Input aria-label="Yechish miqdori" inputMode="numeric" placeholder="30 000" required value={amount} onChange={e => setAmount(e.target.value)} /></label>
               <label className="block">Karta / hamyon manzili<Input aria-label="Karta yoki hamyon" required minLength={8} maxLength={256} value={destination} onChange={e => setDestination(e.target.value)} /></label>
-              <Button type="submit" disabled={busy || balance < m.min} className="btn-blue w-full">{busy ? "Yuborilmoqda..." : balance < m.min ? `Yana $${(m.min - balance).toFixed(2)} kerak` : "So‘rov yuborish"}</Button>
+              <Button type="submit" disabled={busy || balance < m.min} className="btn-blue w-full">{busy ? "Yuborilmoqda..." : balance < m.min ? `Yana ${dollarsSom(m.min - balance)} kerak` : "So‘rov yuborish"}</Button>
             </form>
           </div>
         )}
@@ -370,7 +365,7 @@ function WalletS({ balance, back, withdrawals, withdraw, clockOffset }: { clockO
         <h2 className="mt-5 mb-2 text-sm font-extrabold">Yechish so‘rovlari</h2>
         {withdrawals.some(w => openPayment(w.status)) && <p role="status" className="bg-blue-soft mb-3 rounded-lg p-3 text-sm">⏳ Menejerimiz to‘lov yubormoqda, tez orada to‘lab beriladi.</p>}
         {!withdrawals.length && <p className="py-3 text-xs text-muted-foreground">Hozircha so‘rovlar yo‘q</p>}
-        {withdrawals.map(w => <div key={w.id} className="flex justify-between gap-2 border-b py-3 text-xs"><span className="uppercase">{w.method}<small className="block normal-case text-muted-foreground">{STATUS_LABELS[w.status]}</small>{w.queue_number && <small className="block mt-1 normal-case font-bold">#{w.queue_number} navbat</small>}{openPayment(w.status) && w.due_at && <small className="block mt-1 normal-case"><Countdown deadline={w.due_at} offset={clockOffset} expired="Muddat tugadi — to‘lov kutilmoqda"/></small>}</span><b>${(w.amount_cents/100).toFixed(2)}</b></div>)}
+        {withdrawals.map(w => <div key={w.id} className="flex justify-between gap-2 border-b py-3 text-xs"><span className="uppercase">{w.method}<small className="block normal-case text-muted-foreground">{STATUS_LABELS[w.status]}</small>{w.queue_number && <small className="block mt-1 normal-case font-bold">#{w.queue_number} navbat</small>}{w.created_by_admin && <small className="block mt-1 normal-case">To‘lovni qaytarish bo‘yicha ariza yuborilgan: siz yechib olgansiz. {w.destination} kartaga {formatSom(w.amount_cents)} qaytariladi.</small>}{openPayment(w.status) && w.due_at && <small className="block mt-1 normal-case"><Countdown deadline={w.due_at} offset={clockOffset} expired="Muddat tugadi — to‘lov kutilmoqda"/></small>}</span><b>{formatSom(w.amount_cents)}</b></div>)}
       </div>
     </div>
   );
@@ -419,13 +414,13 @@ function ProfileS({ keys, profile, stats, admin }: { keys: Record<Color, number>
           </div>
         </div>
         <div className="grid grid-cols-3 gap-2 text-center">
-          {[["0", "Referrals"], [String(stats.opened), "Cases opened"], [`$${stats.earned.toFixed(2)}`, "Total earned"]].map(([v, l]) => (
+          {[["0", "Referrals"], [String(stats.opened), "Cases opened"], [dollarsSom(stats.earned), "Total earned"]].map(([v, l]) => (
             <div key={l} className="lcard p-2"><b className="block">{v}</b><span className="text-[10px] text-muted-foreground">{l}</span></div>
           ))}
         </div>
         <div className="lcard p-3 text-xs">
           <b className="text-sm">Statistics</b>
-          {[["Withdrawn", "$0.00"], ["Active keys", String(Object.values(keys).reduce((total, n) => total + n, 0))]].map(([l, v]) => (
+          {[["Withdrawn", "0 so‘m"], ["Active keys", String(Object.values(keys).reduce((total, n) => total + n, 0))]].map(([l, v]) => (
             <div key={l} className="flex justify-between border-b py-2 last:border-0"><span>{l}</span><b>{v}</b></div>
           ))}
         </div>
