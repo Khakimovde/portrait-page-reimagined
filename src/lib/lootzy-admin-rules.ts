@@ -9,4 +9,4 @@ export function dollarsToCents(raw: string) {
   const cents = Math.round(Number(raw) * 100);
   if (!Number.isSafeInteger(cents) || cents < 1) throw new Error("Miqdor noldan katta bo‘lsin");
   return cents;
-}
+}export const ADMIN_PAYOUT_DAYS = 5;
