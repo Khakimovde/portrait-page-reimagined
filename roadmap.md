@@ -1,0 +1,24 @@
+# Requested changes
+- [x] Add visible Mining purchase promotion with fixed 15-hour countdown, exact case bonuses, details and admin contact; 16 tests passed and isolated desktop/mobile UI checked; rewards remain admin-issued, real Telegram flow unverified.
+- [x] Replace Pink omad with admin-activated 50,000/100,000 UZS Mining, fixed-at-start exchange rate and atomic 48-hour triple payout; database rollback test and UI confirmation checked.
+- [x] Persist withdrawal queue numbers and seven-day deadlines for 124 existing open and all new requests; 76 tests passed.
+- [ ] Verify Mining activation and payout through real Telegram UI — requires a real signed Telegram launch unavailable in this session.
+- [x] Previous Pink bonus rounds superseded by Mining; historical results and prizes preserved.
+- [x] Link Profile Support to @Lootzy_help.
+- [x] Configure local npm run build for static dist/index.html and bundled assets while preserving managed Cloud builds; build target tests passed, final static output not manually built.
+- [x] Correct ad progress to count only verified reports and show pending reports separately; verified key granting remains blocked on provider confirmation setup below.
+- [x] Fix false missing-data error after successful Telegram account/role writes; reproduced failure and passed all 34 regression tests.
+- [x] Keep four cases and define exact ad/referral key rules; disable unverified reward grants.
+- [x] Verify Telegram signatures for display identity; block normal browser entry.
+- [x] Use @Lootzy_enbot Main Mini App referral links.
+- [x] Add separate Vite static-hosting configuration and upload instructions without a Node server.
+- [x] Test reward rules, forged launch rejection and browser entry screen.
+- [x] Add Telegram-only admin access for ID 5326022510 with secure persistent accounts and grants.
+- [x] Add daily statistics, user search/details, and withdrawal approval/rejection/payment workflow.
+- [x] Verify forged-request rejection, every admin action's role gate, grant UI flow and database function permissions.
+- [ ] Verify real admin grants, case balances and withdrawal reservation/refund end-to-end — needs a real signed Telegram launch; mocked UI checks do not verify persistence.
+- [ ] Real Telegram launch verification — needs Main Mini App HTTPS URL configured in BotFather and a real signed launch.
+- [ ] Verified ad completion / tenth-ad red key — needs configured provider confirmation: Monetag postback setup and secure per-show correlation; Onclicka authenticated completion/correlation contract is undocumented. Browser promises cannot authorize spendable keys.- [x] Bot /start with mandatory @Lootzy_en subscription check, then main menu (Boshlash mini app, Kanal, Support, To'lovlar kanali).
+- [x] Referral links open the bot; referral counts only after the friend subscribes and confirms.
+- [x] Bot messages on withdrawal request, approval, rejection and payment.
+- [x] Hosted mini app now reads this project's server (portrait-of-a-page.lovable.app) so referral counts appear; ready ZIP built.
