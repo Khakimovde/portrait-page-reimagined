@@ -44,21 +44,17 @@ export const Route = createFileRoute("/api/public/lootzy")({ server: { handlers:
        if (d.action === "withdraw" && (d.amount ?? 0) < (d.method === "uzcard" || d.method === "humo" ? 250 : 500)) throw new Error(`Minimal miqdor ${d.method === "uzcard" || d.method === "humo" ? "30 000" : "60 000"} so‘m`);
        if (d.action === "admin_withdraw") {
          if (!d.id || !d.target || !d.amount || !d.method || !d.destination) throw new Error("ID, summa va kartani kiriting");
-         const w = checked(await db.rpc("lootzy_admin_withdraw", { p_actor: profile.id, p_action: "create", p_id: d.id, p_target: d.target, p_amount: d.amount, p_method: d.method, p_destination: d.destination })) as { amount_cents?: number };
+         const w = checked(await db.rpc("lootzy_admin_withdraw", { p_actor: profile.id, p_action: "create", p_id: d.id, p_target: d.target, p_amount: d.amount, p_method: d.method, p_destination: d.destination, p_status: "pending" })) as { amount_cents?: number };
          await notify(d.target, adminWithdrawalText(w.amount_cents ?? d.amount, d.method, d.destination));
        }
        if (d.action === "decision" && d.id) {
          const own = checked(await db.from("lootzy_withdrawals").select("created_by_admin").eq("id", d.id));
          if (own[0]?.created_by_admin) {
            if (!d.status) throw new Error("Holatni tanlang");
-           const w = checked(await db.rpc("lootzy_admin_withdraw", { p_actor: profile.id, p_action: "decision", p_id: d.id, p_status: d.status })) as { telegram_id?: number; amount_cents?: number; method?: string; status?: string };
+           const w = checked(await db.rpc("lootzy_admin_withdraw", { p_actor: profile.id, p_action: "decision", p_id: d.id, p_status: d.status, p_target: 0, p_amount: 0, p_method: "", p_destination: "" })) as { telegram_id?: number; amount_cents?: number; method?: string; status?: string };
            if (w.telegram_id && w.status === d.status && d.status !== "rejected") await notify(w.telegram_id, withdrawalText(d.status, w.amount_cents ?? 0, w.method ?? ""));
            d.action = "overview";
          }
-       }
-       if (d.action === "mining_start") {
-         if (!d.id || !d.target || !d.rate || ![50000,100000].includes(d.amount ?? 0)) throw new Error("ID, tarif va dollar kursini kiriting");
-         checked(await db.rpc("lootzy_mining_start", { p_actor: profile.id, p_target: d.target, p_id: d.id, p_principal: d.amount ?? 0, p_rate: d.rate }));
        }
        if (d.action === "bonus_add" || d.action === "bonus_draw") {
          checked(await db.rpc("lootzy_bonus_nov09_manage", { p_actor: profile.id, p_action: d.action === "bonus_add" ? "add" : "draw", ...(d.target ? { p_target: d.target } : {}), ...(d.quantity !== undefined ? { p_quantity: d.quantity } : {}) }));
@@ -89,13 +85,6 @@ export const Route = createFileRoute("/api/public/lootzy")({ server: { handlers:
       const referrals = { invited: refs.length, confirmed: confirmedRefs, keys: Math.floor(confirmedRefs / 10) };
       const result: Record<string, unknown> = { referrals, account, isAdmin: admin, ads: ads.filter(ad => ad.verified).length, reportedAds: ads.length, withdrawals };
        result["serverTime"] = new Date().toISOString();
-       if (d.action === "mining" || d.action === "mining_start") {
-         const query = db.from("lootzy_mining").select("*").order("started_at", { ascending: false });
-         const runs = checked(await (admin ? query.limit(200) : query.eq("telegram_id", profile.id).limit(100)));
-         const ids = [...new Set(runs.map(r => r.telegram_id))];
-         const people = admin && ids.length ? checked(await db.from("lootzy_accounts").select("*").in("telegram_id", ids)) : [];
-         result["mining"] = runs.map(r => ({ ...r, ...(admin ? { account: people.find(p => p.telegram_id === r.telegram_id) } : {}) }));
-       }
        if (["bonus", "bonus_add", "bonus_draw"].includes(d.action)) {
          const games = checked(await db.from("lootzy_bonus_games").select("drawn_at").eq("id", BONUS_GAME_ID));
          const entries = checked(await db.from("lootzy_bonus_entries").select("telegram_id,pink_count,rank").eq("game_id", BONUS_GAME_ID).order("created_at"));
