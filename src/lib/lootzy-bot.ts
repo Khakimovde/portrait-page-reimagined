@@ -5,7 +5,7 @@ export const CHANNEL = "@Lootzy_en";
 export const CHANNEL_URL = "https://t.me/Lootzy_en";
 export const SUPPORT_LINK = "https://t.me/Lootzy_help";
 export const PAYMENTS_URL = "https://t.me/Lootzy_Paid";
-export const MINI_APP_URL = "https://6a7ab988cb4f5.xvest6.ru";
+export const MINI_APP_URL = "https://portrait-page-reimagined.lovable.app";
 export const CHECK_SUB = "check_sub";
 
 /** Reads `ref_<id>` from a /start command; anything else is ignored. */
