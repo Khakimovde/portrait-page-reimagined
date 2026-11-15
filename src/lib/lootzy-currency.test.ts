@@ -8,3 +8,5 @@ describe("so'm conversion", () => {
   it("typed 60 000 so'm stores $5", () => expect(somToCents("60 000")).toBe(500));
   it("rejects decimals", () => expect(() => somToCents("12.5")).toThrow());
 });
+import { formatSom } from "./lootzy-currency";
+describe("so‘m display", () => { it("groups thousands", () => expect(formatSom(10000)).toBe("1 200 000 so‘m")); });

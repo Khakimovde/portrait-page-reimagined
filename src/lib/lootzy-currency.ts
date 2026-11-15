@@ -2,7 +2,7 @@
 export const UZS_PER_USD = 12000;
 export const UZS_PER_CENT = UZS_PER_USD / 100;
 export function centsToSom(cents: number) { return Math.round(cents * UZS_PER_CENT); }
-export function formatSom(cents: number) { return `${centsToSom(cents).toLocaleString("ru-RU").replace(/,/g, " ")} so‘m`; }
+export function formatSom(cents: number) { return `${String(centsToSom(cents)).replace(/\B(?=(\d{3})+(?!\d))/g, " ")} so‘m`; }
 export function dollarsSom(dollars: number) { return formatSom(Math.round(dollars * 100)); }
 export function somToCents(raw: string) {
   const clean = raw.replace(/[\s,]/g, "");

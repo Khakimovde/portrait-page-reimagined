@@ -14,7 +14,7 @@ describe("admin grant flow", () => {
     fireEvent.change(screen.getByLabelText("ID yoki username"), { target: { value: "123" } });
     fireEvent.click(screen.getByRole("button", { name: "Qidirish" }));
     fireEvent.click(await screen.findByRole("button", { name: /Test User/ }));
-    fireEvent.change(await screen.findByLabelText("Dollar miqdori"), { target: { value: "5.25" } });
+    fireEvent.change(await screen.findByLabelText("So‘m miqdori"), { target: { value: "63000" } });
     fireEvent.change(screen.getByLabelText("Kalit soni"), { target: { value: "3" } });
     fireEvent.click(screen.getByRole("button", { name: "pink kalit" }));
     fireEvent.click(screen.getByRole("button", { name: "Qo‘shish" }));
