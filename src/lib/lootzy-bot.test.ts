@@ -25,7 +25,7 @@ describe("bot keyboards", () => {
   });
   it("main menu: Boshlash mini app, then Kanal + Support, then To'lovlar kanali", () => {
     const rows = menuKeyboard.inline_keyboard;
-    expect(rows[0]?.[0]).toMatchObject({ web_app: { url: "https://6a7ab988cb4f5.xvest6.ru" } });
+    expect(rows[0]?.[0]).toMatchObject({ web_app: { url: "https://portrait-page-reimagined.lovable.app" } });
     expect(rows[1]?.map(b => "url" in b ? b.url : "")).toEqual(["https://t.me/Lootzy_en", "https://t.me/Lootzy_help"]);
     expect(rows[2]?.[0]).toMatchObject({ url: "https://t.me/Lootzy_Paid" });
   });

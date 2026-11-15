@@ -43,7 +43,7 @@ In BotFather, select **@Lootzy_enbot**, enable its **Main Mini App**, and set it
 
 The Cloud API independently checks raw Telegram launch signatures on every request. Accounts, balances, keys and withdrawals are stored securely; old browser balances are not imported. Only Telegram ID 5326022510 can receive the server-managed admin role. Admin access appears in Profile after a successful Cloud identity check.
 
-The static frontend defaults to `https://portrait-of-a-page.lovable.app` (set in scripts/api-url.mjs) for its Cloud API. Publish the latest Cloud API through Lovable before using the uploaded frontend. To use another published API, set `VITE_LOOTZY_API_URL` when building. No continuously running Node server is needed on your static host, but the Cloud service is still required for secure account/admin operations.
+The static frontend defaults to `https://portrait-page-reimagined.lovable.app` (set in scripts/api-url.mjs) for its Cloud API. Publish the latest Cloud API through Lovable before using the uploaded frontend. To use another published API, set `VITE_LOOTZY_API_URL` when building. No continuously running Node server is needed on your static host, but the Cloud service is still required for secure account/admin operations.
 
 Admins can search accounts after users first open the Mini App, add dollars or keys, and manage withdrawal requests. Withdrawals reserve balance immediately; rejection refunds exactly once. Marking paid records an externally completed payment; it does not send money to a bank or crypto network.
 
