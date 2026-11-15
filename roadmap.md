@@ -22,3 +22,6 @@
 - [x] Referral links open the bot; referral counts only after the friend subscribes and confirms.
 - [x] Bot messages on withdrawal request, approval, rejection and payment.
 - [x] Hosted mini app now reads this project's server (portrait-of-a-page.lovable.app) so referral counts appear; ready ZIP built.
+- [x] Repointed this copy's data source and the bot's Start button at its own address (portrait-page-reimagined.lovable.app); 79 tests passed.
+- [x] Rebuilt drizzle/migrations/0001_migration.sql from the copy's live database after the remix dropped it; 79 tests passed.
+- [ ] Set BotFather's Main Mini App URL to https://portrait-page-reimagined.lovable.app — needs BotFather access.
