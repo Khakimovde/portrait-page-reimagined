@@ -1,4 +1,5 @@
 # Requested changes
+- [ ] Remove the wallet manager-payment warning and deliver an inspected static dist ZIP built with npm install and npm run build.
 - [x] Add visible Mining purchase promotion with fixed 15-hour countdown, exact case bonuses, details and admin contact; 16 tests passed and isolated desktop/mobile UI checked; rewards remain admin-issued, real Telegram flow unverified.
 - [x] Replace Pink omad with admin-activated 50,000/100,000 UZS Mining, fixed-at-start exchange rate and atomic 48-hour triple payout; database rollback test and UI confirmation checked.
 - [x] Persist withdrawal queue numbers and seven-day deadlines for 124 existing open and all new requests; 76 tests passed.
