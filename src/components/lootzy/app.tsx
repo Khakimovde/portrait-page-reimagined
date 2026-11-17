@@ -52,6 +52,8 @@ type Screen = "home" | "keys" | "wallet" | "referral" | "profile" | "case" | "wi
 const Key = ({ c, size = 22 }: { c: Color; size?: number }) => (
   <KeyRound className={`k-${c}`} size={size} strokeWidth={2.6} />
 );
+// One fixed 20-hour window shared by everyone (Tashkent time).
+const PROMO_END = "2026-11-18T12:50:00+05:00";
 const Chest = ({ c, className = "" }: { c: Color; className?: string }) => (
   <img src={chest} alt="" className={`c-${c} ${className}`} loading="lazy" />
 );
@@ -108,7 +110,7 @@ function LootzyApp({ profile, initData }: { profile: TelegramProfile; initData: 
     try {
       await showNextAd();
       apply(await cloudCall(initData, { action: "ad_report", id: crypto.randomUUID() }));
-      setAdMsg("Reklama hisoboti saqlandi. Kalit uchun tasdiqlangan reklama kerak.");
+      setAdMsg("Reklama hisoblandi.");
     } catch { setAdMsg("Reklama yuklanmadi, qayta urinib ko‘ring."); }
     finally { setAdBusy(false); }
   };
@@ -126,7 +128,7 @@ function LootzyApp({ profile, initData }: { profile: TelegramProfile; initData: 
       <div className="relative w-full max-w-[430px] min-h-screen pb-20">
         {cloudError && <div role="alert" className="p-4 text-sm text-destructive">{cloudError}<Button variant="ghost" onClick={() => void sync()}>Qayta urinish</Button></div>}
         {screen === "admin" && isAdmin && <AdminPanel initData={initData} back={() => go("profile")} changed={() => void sync()} />}
-        {screen === "home" && <HomeS balance={balance} ads={ads} reportedAds={reportedAds} busy={adBusy} msg={adMsg} onWatch={() => void watchAd()} />}
+        {screen === "home" && <HomeS clockOffset={clockOffset} balance={balance} ads={ads} reportedAds={reportedAds} busy={adBusy} msg={adMsg} onWatch={() => void watchAd()} />}
         {screen === "keys" && <KeysS keys={keys} back={() => go("home")} pick={(c) => { setSel(c); go("case"); }} detail={(c) => { setSel(c); go("keydetail"); }} />}
         {screen === "case" && <CaseS c={sel} n={keys[sel]} close={() => go("keys")} open={openCase} done={() => go("win")} />}
         {screen === "win" && <WinS v={won} balance={balance} close={() => go("keys")} />}
@@ -159,10 +161,11 @@ function Header({ title, back, right }: { title: string; back?: () => void; righ
   );
 }
 
-function HomeS({ balance, ads, reportedAds, busy, msg, onWatch }: { balance: number; ads: number; reportedAds: number; busy: boolean; msg: string; onWatch: () => void }) {
+function HomeS({ balance, ads, reportedAds, busy, msg, onWatch, clockOffset }: { clockOffset: number; balance: number; ads: number; reportedAds: number; busy: boolean; msg: string; onWatch: () => void }) {
   const limit = reportedAds >= MAX_DAILY_ADS;
   const progress = ads % ADS_PER_KEY;
   const keysToday = Math.floor(ads / ADS_PER_KEY);
+  const [promo, setPromo] = useState(false);
   return (
     <div className="app-light min-h-screen">
       <div className="relative h-60 overflow-hidden rounded-b-3xl">
@@ -171,12 +174,27 @@ function HomeS({ balance, ads, reportedAds, busy, msg, onWatch }: { balance: num
           <span className="grid h-9 w-9 place-items-center rounded-full btn-red"><Bell size={18} /></span>
           <span className="flex items-center gap-1 rounded-full btn-blue px-3 py-1 text-sm font-extrabold"><KeyRound size={14} /> {dollarsSom(balance)}</span>
         </div>
+        <p className="relative mx-4 -mt-2 rounded-lg bg-card/90 px-2 py-1 text-right text-[11px] font-bold text-card-foreground">⚠️ Eski balanslaringiz yuklanmoqda, tez orada o‘z holiga qaytadi.</p>
         <div className="relative text-center">
           <div className="title-logo text-5xl">Lootzy</div>
           <div className="text-xs font-bold text-primary-foreground drop-shadow">Watch Ads · Get Keys · Open Cases</div>
         </div>
       </div>
       <div className="space-y-3 px-4 pt-4">
+        <Button variant="ghost" onClick={() => setPromo(!promo)} className="btn-red h-auto w-full flex-col whitespace-normal rounded-2xl p-4 shadow-xl">
+          <b className="text-xl">🔥 SUPER SKIDKA 50%</b>
+          <span className="text-xs">Tugashiga: <Countdown deadline={PROMO_END} offset={clockOffset} expired="Aksiya tugadi" /></span>
+        </Button>
+        {promo && <div className="lcard flex items-center gap-3 p-4">
+          <Chest c="pink" className="h-16 w-16" />
+          <div className="flex-1">
+            <b className="block">Pink Case</b>
+            <span className="text-sm text-muted-foreground line-through decoration-destructive decoration-2">60 000 so‘m</span>{" "}
+            <b className="text-lg k-red">30 000 so‘m</b>
+            <a href={SUPPORT_URL} target="_blank" rel="noreferrer" className="mt-1 block text-xs font-bold k-blue underline">Sotib olish uchun yozing</a>
+          </div>
+        </div>}
+        <p role="note" className="rounded-xl border p-3 text-xs font-bold">⚠️ Bugundan boshlab pul yechish so‘rovlari 40 soat ichida amalga oshiriladi.</p>
         <Button variant="ghost" disabled={busy || limit} onClick={onWatch} className="watch-ad watch-card h-auto flex w-full items-center gap-3 whitespace-normal rounded-2xl p-4 text-left shadow-xl disabled:opacity-70">
           <span className="grid h-14 w-14 shrink-0 place-items-center rounded-full btn-green">{busy ? <Loader2 className="animate-spin" size={26} /> : <Play fill="currentColor" size={26} />}</span>
           <span className="min-w-0 flex-1"><b className="block text-base">{limit ? "Bugungi limit tugadi" : busy ? "Reklama ochilmoqda..." : "Reklama ko‘rish"}</b><span className="text-xs opacity-90">{limit ? "Ertaga 00:00 (Toshkent) da yangilanadi" : "10 ta reklama = 1 ta red kalit"}</span></span>
