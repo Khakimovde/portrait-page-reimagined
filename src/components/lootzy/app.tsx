@@ -101,7 +101,7 @@ function LootzyApp({ profile, initData }: { profile: TelegramProfile; initData: 
   ];
   const showTabs = ["home", "keys", "wallet", "referral", "profile"].includes(screen);
 
-  // Client completion reports never authorize spendable keys.
+  // Each finished ad is counted automatically on the server (15s gap, 30/day).
   const watchAd = async () => {
     if (adBusy || adsToday(reportedDay, new Date()) >= MAX_DAILY_ADS) return;
     setAdBusy(true); setAdMsg("");
@@ -185,7 +185,7 @@ function HomeS({ balance, ads, reportedAds, busy, msg, onWatch }: { balance: num
         {msg && <p className="text-center text-sm font-bold" role="status">{msg}</p>}
         <div className="lcard flex items-center gap-3 p-4">
           <div className="flex-1">
-            <div className="text-xs font-bold text-muted-foreground">Tasdiqlangan reklamalar</div>
+            <div className="text-xs font-bold text-muted-foreground">Ko‘rilgan reklamalar</div>
             <div className="text-2xl font-extrabold">{progress} / {ADS_PER_KEY}</div>
             <div className="progress mt-2 h-3 rounded-full"><i style={{ width: `${progress * 10}%` }} /></div>
           </div>
