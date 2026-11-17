@@ -356,6 +356,8 @@ function WalletS({ balance, back, withdrawals, withdraw, clockOffset }: { clockO
         <img src={walletImg} alt="" className="absolute -right-2 -top-2 h-28 w-28" />
         <div className="text-sm">Your Balance</div>
         <div className="text-3xl font-extrabold">{dollarsSom(balance)}</div>
+        <div className="relative mt-1 text-xs font-bold">⚠️ Eski balanslaringiz yuklanmoqda, tez orada o‘z holiga qaytadi.</div>
+        <div className="relative mt-1 text-xs font-bold">⏱ Pul yechish so‘rovlari 40 soat ichida amalga oshiriladi.</div>
       </div>
       <div className="app-light mx-3 mt-3 rounded-2xl p-3">
         <h2 className="mb-2 font-extrabold">Withdraw Methods</h2>
