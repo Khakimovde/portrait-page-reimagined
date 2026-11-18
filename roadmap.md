@@ -30,3 +30,4 @@
 - [x] Removed mining and the bonus-case promotion from the home screen and admin panel; ad watching is the main menu.
 - [x] All amounts shown and typed in so'm (1$ = 12 000 so'm); bot messages too.
 - [x] Admin can create a withdrawal (refund) request by Telegram ID, amount and card; 5-day countdown, no balance deduction, user sees it on login and gets a bot message.
+- [x] Static dist rebuilt with the tournament card (no discount text, no mining, no manager warning); ZIP delivered as lootzy-dist-v3.zip.
