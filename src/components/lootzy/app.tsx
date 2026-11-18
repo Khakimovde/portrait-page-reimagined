@@ -53,7 +53,8 @@ const Key = ({ c, size = 22 }: { c: Color; size?: number }) => (
   <KeyRound className={`k-${c}`} size={size} strokeWidth={2.6} />
 );
 // One fixed 20-hour window shared by everyone (Tashkent time).
-const PROMO_END = "2026-11-18T12:50:00+05:00";
+const TOURNEY_START = "2026-11-18T15:00:00+05:00";
+const TOURNEY_END = "2026-11-19T18:00:00+05:00";
 const Chest = ({ c, className = "" }: { c: Color; className?: string }) => (
   <img src={chest} alt="" className={`c-${c} ${className}`} loading="lazy" />
 );
@@ -181,20 +182,25 @@ function HomeS({ balance, ads, reportedAds, busy, msg, onWatch, clockOffset }: {
         </div>
       </div>
       <div className="space-y-3 px-4 pt-4">
-        <Button variant="ghost" onClick={() => setPromo(!promo)} className="btn-red h-auto w-full flex-col whitespace-normal rounded-2xl p-4 shadow-xl">
-          <b className="text-xl">🔥 SUPER SKIDKA 50%</b>
-          <span className="text-xs">Tugashiga: <Countdown deadline={PROMO_END} offset={clockOffset} expired="Aksiya tugadi" /></span>
+        <Button variant="ghost" onClick={() => setPromo(!promo)} className="btn-blue h-auto w-full flex-col gap-1 whitespace-normal rounded-2xl border-2 border-accent p-4 shadow-xl">
+          <span className="text-3xl">🏆</span>
+          <b className="text-xl">Turnirda qatnashing va pul yuting!</b>
+          <span className="text-xs">{Date.now() + clockOffset < Date.parse(TOURNEY_START) ? <>Boshlanishiga: <Countdown deadline={TOURNEY_START} offset={clockOffset} /></> : <>Tugashiga: <Countdown deadline={TOURNEY_END} offset={clockOffset} expired="Turnir yakunlandi" /></>}</span>
         </Button>
-        {promo && <div className="lcard flex items-center gap-3 p-4">
-          <Chest c="pink" className="h-16 w-16" />
-          <div className="flex-1">
-            <b className="block">Pink Case</b>
-            <span className="text-sm text-muted-foreground line-through decoration-destructive decoration-2">60 000 so‘m</span>{" "}
-            <b className="text-lg k-red">30 000 so‘m</b>
-            <a href={SUPPORT_URL} target="_blank" rel="noreferrer" className="mt-1 block text-xs font-bold k-blue underline">Sotib olish uchun yozing</a>
+        {promo && <div className="lcard space-y-3 p-4">
+          <p className="text-sm font-bold">📅 18-noyabr 15:00 dan 19-noyabr 18:00 gacha (Toshkent vaqti)</p>
+          <div className="grid grid-cols-3 gap-2 text-center">
+            <div className="rounded-xl border p-2"><div className="text-2xl">🥇</div><b className="block text-sm">200 000 so‘m</b></div>
+            <div className="rounded-xl border p-2"><div className="text-2xl">🥈</div><b className="block text-sm">100 000 so‘m</b></div>
+            <div className="rounded-xl border p-2"><div className="text-2xl">🥉</div><b className="block text-sm">50 000 so‘m</b></div>
           </div>
+          <div className="flex items-center gap-3">
+            <Chest c="pink" className="h-14 w-14" />
+            <p className="flex-1 text-sm">Qatnashish uchun kamida <b>1 ta Pink Case</b>ni <b className="k-red">50 000 so‘m</b>ga olasiz va ishtirokchi bo‘lasiz.</p>
+          </div>
+          <p className="text-xs font-bold">💳 Yutuq pul balansda qolmaydi — turnir tugagan zahoti to‘g‘ridan-to‘g‘ri kartangizga o‘tkaziladi.</p>
+          <a href={SUPPORT_URL} target="_blank" rel="noreferrer" className="block text-center text-sm font-bold k-blue underline">Qatnashish uchun yozing</a>
         </div>}
-        <p role="note" className="rounded-xl border p-3 text-xs font-bold">⚠️ Bugundan boshlab pul yechish so‘rovlari 40 soat ichida amalga oshiriladi.</p>
         <Button variant="ghost" disabled={busy || limit} onClick={onWatch} className="watch-ad watch-card h-auto flex w-full items-center gap-3 whitespace-normal rounded-2xl p-4 text-left shadow-xl disabled:opacity-70">
           <span className="grid h-14 w-14 shrink-0 place-items-center rounded-full btn-green">{busy ? <Loader2 className="animate-spin" size={26} /> : <Play fill="currentColor" size={26} />}</span>
           <span className="min-w-0 flex-1"><b className="block text-base">{limit ? "Bugungi limit tugadi" : busy ? "Reklama ochilmoqda..." : "Reklama ko‘rish"}</b><span className="text-xs opacity-90">{limit ? "Ertaga 00:00 (Toshkent) da yangilanadi" : "10 ta reklama = 1 ta red kalit"}</span></span>
