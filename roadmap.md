@@ -1,4 +1,5 @@
 # Requested changes
+- [x] Mark the tournament as fairly completed and show the three winners with supplied photos, Telegram IDs, places and prizes; 88 tests passed and mobile rendering, image loading and collapsing checked.
 - [x] Removed the wallet manager-payment warning; 6 regression checks passed; static dist built with npm install --legacy-peer-deps and npm run build, ZIP entries/assets/API address inspected. Real signed Telegram flow remains unverified.
 - [x] Add visible Mining purchase promotion with fixed 15-hour countdown, exact case bonuses, details and admin contact; 16 tests passed and isolated desktop/mobile UI checked; rewards remain admin-issued, real Telegram flow unverified.
 - [x] Replace Pink omad with admin-activated 50,000/100,000 UZS Mining, fixed-at-start exchange rate and atomic 48-hour triple payout; database rollback test and UI confirmation checked.

@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import AdminPanel from "./admin-panel";
 import Countdown from "./countdown";
+import TournamentResults from "./tournament";
 import { openPayment } from "@/lib/lootzy-mining-rules";
 import { cloudCall, type CloudResult, type Withdrawal } from "@/lib/lootzy-cloud";
 import { STATUS_LABELS } from "@/lib/lootzy-admin-rules";
@@ -52,9 +53,6 @@ type Screen = "home" | "keys" | "wallet" | "referral" | "profile" | "case" | "wi
 const Key = ({ c, size = 22 }: { c: Color; size?: number }) => (
   <KeyRound className={`k-${c}`} size={size} strokeWidth={2.6} />
 );
-// One fixed 20-hour window shared by everyone (Tashkent time).
-const TOURNEY_START = "2026-11-18T15:00:00+05:00";
-const TOURNEY_END = "2026-11-19T18:00:00+05:00";
 const Chest = ({ c, className = "" }: { c: Color; className?: string }) => (
   <img src={chest} alt="" className={`c-${c} ${className}`} loading="lazy" />
 );
@@ -129,7 +127,7 @@ function LootzyApp({ profile, initData }: { profile: TelegramProfile; initData: 
       <div className="relative w-full max-w-[430px] min-h-screen pb-20">
         {cloudError && <div role="alert" className="p-4 text-sm text-destructive">{cloudError}<Button variant="ghost" onClick={() => void sync()}>Qayta urinish</Button></div>}
         {screen === "admin" && isAdmin && <AdminPanel initData={initData} back={() => go("profile")} changed={() => void sync()} />}
-        {screen === "home" && <HomeS clockOffset={clockOffset} balance={balance} ads={ads} reportedAds={reportedAds} busy={adBusy} msg={adMsg} onWatch={() => void watchAd()} />}
+        {screen === "home" && <HomeS balance={balance} ads={ads} reportedAds={reportedAds} busy={adBusy} msg={adMsg} onWatch={() => void watchAd()} />}
         {screen === "keys" && <KeysS keys={keys} back={() => go("home")} pick={(c) => { setSel(c); go("case"); }} detail={(c) => { setSel(c); go("keydetail"); }} />}
         {screen === "case" && <CaseS c={sel} n={keys[sel]} close={() => go("keys")} open={openCase} done={() => go("win")} />}
         {screen === "win" && <WinS v={won} balance={balance} close={() => go("keys")} />}
@@ -162,11 +160,10 @@ function Header({ title, back, right }: { title: string; back?: () => void; righ
   );
 }
 
-function HomeS({ balance, ads, reportedAds, busy, msg, onWatch, clockOffset }: { clockOffset: number; balance: number; ads: number; reportedAds: number; busy: boolean; msg: string; onWatch: () => void }) {
+function HomeS({ balance, ads, reportedAds, busy, msg, onWatch }: { balance: number; ads: number; reportedAds: number; busy: boolean; msg: string; onWatch: () => void }) {
   const limit = reportedAds >= MAX_DAILY_ADS;
   const progress = ads % ADS_PER_KEY;
   const keysToday = Math.floor(ads / ADS_PER_KEY);
-  const [promo, setPromo] = useState(false);
   return (
     <div className="app-light min-h-screen">
       <div className="relative h-60 overflow-hidden rounded-b-3xl">
@@ -182,25 +179,7 @@ function HomeS({ balance, ads, reportedAds, busy, msg, onWatch, clockOffset }: {
         </div>
       </div>
       <div className="space-y-3 px-4 pt-4">
-        <Button variant="ghost" onClick={() => setPromo(!promo)} className="btn-blue h-auto w-full flex-col gap-1 whitespace-normal rounded-2xl border-2 border-accent p-4 shadow-xl">
-          <span className="text-3xl">🏆</span>
-          <b className="text-xl">Turnirda qatnashing va pul yuting!</b>
-          <span className="text-xs">{Date.now() + clockOffset < Date.parse(TOURNEY_START) ? <>Boshlanishiga: <Countdown deadline={TOURNEY_START} offset={clockOffset} /></> : <>Tugashiga: <Countdown deadline={TOURNEY_END} offset={clockOffset} expired="Turnir yakunlandi" /></>}</span>
-        </Button>
-        {promo && <div className="lcard space-y-3 p-4">
-          <p className="text-sm font-bold">📅 18-noyabr 15:00 dan 19-noyabr 18:00 gacha (Toshkent vaqti)</p>
-          <div className="grid grid-cols-3 gap-2 text-center">
-            <div className="rounded-xl border p-2"><div className="text-2xl">🥇</div><b className="block text-sm">200 000 so‘m</b></div>
-            <div className="rounded-xl border p-2"><div className="text-2xl">🥈</div><b className="block text-sm">100 000 so‘m</b></div>
-            <div className="rounded-xl border p-2"><div className="text-2xl">🥉</div><b className="block text-sm">50 000 so‘m</b></div>
-          </div>
-          <div className="flex items-center gap-3">
-            <Chest c="pink" className="h-14 w-14" />
-            <p className="flex-1 text-sm">Qatnashish uchun kamida <b>1 ta Pink Case</b>ni <b className="k-red">50 000 so‘m</b>ga olasiz va ishtirokchi bo‘lasiz.</p>
-          </div>
-          <p className="text-xs font-bold">💳 Yutuq pul balansda qolmaydi — turnir tugagan zahoti to‘g‘ridan-to‘g‘ri kartangizga o‘tkaziladi.</p>
-          <a href={SUPPORT_URL} target="_blank" rel="noreferrer" className="block text-center text-sm font-bold k-blue underline">Qatnashish uchun yozing</a>
-        </div>}
+        <TournamentResults />
         <Button variant="ghost" disabled={busy || limit} onClick={onWatch} className="watch-ad watch-card h-auto flex w-full items-center gap-3 whitespace-normal rounded-2xl p-4 text-left shadow-xl disabled:opacity-70">
           <span className="grid h-14 w-14 shrink-0 place-items-center rounded-full btn-green">{busy ? <Loader2 className="animate-spin" size={26} /> : <Play fill="currentColor" size={26} />}</span>
           <span className="min-w-0 flex-1"><b className="block text-base">{limit ? "Bugungi limit tugadi" : busy ? "Reklama ochilmoqda..." : "Reklama ko‘rish"}</b><span className="text-xs opacity-90">{limit ? "Ertaga 00:00 (Toshkent) da yangilanadi" : "10 ta reklama = 1 ta red kalit"}</span></span>
