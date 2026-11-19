@@ -3,19 +3,22 @@ import { CheckCircle2, ChevronDown, ExternalLink, Trophy } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import nozaninPhoto from "@/assets/nozanin-abdusattorova.jpeg.asset.json";
-import doniyorbekPhoto from "@/assets/doniyorbek.jpeg.asset.json";
-import guliPhoto from "@/assets/guli.jpeg.asset.json";
+import spiderManPhoto from "@/assets/winner-spiderman.jpeg.asset.json";
+import animeCouplePhoto from "@/assets/winner-anime-couple.jpeg.asset.json";
 
+// Photo pairing verified against the owner's correction (19 Nov 2026):
+// Doniyorbek's logo is the Spider-Man picture, Guli's is the anime couple picture.
 export const TOURNAMENT_WINNERS = [
   { place: 1, medal: "🥇", name: "Nozanin Abdusattorova", telegramId: 5837291046, prizeSom: 200_000, photo: nozaninPhoto.url },
-  { place: 2, medal: "🥈", name: "Doniyorbek", telegramId: 9274618350, prizeSom: 100_000, photo: doniyorbekPhoto.url },
-  { place: 3, medal: "🥉", name: "Guli 🤍", telegramId: 6148392751, prizeSom: 50_000, photo: guliPhoto.url },
+  { place: 2, medal: "🥈", name: "Doniyorbek", telegramId: 9274618350, prizeSom: 100_000, photo: spiderManPhoto.url },
+  { place: 3, medal: "🥉", name: "Guli 🤍", telegramId: 6148392751, prizeSom: 50_000, photo: animeCouplePhoto.url },
 ] as const;
 
 const formatPrize = (amount: number) => `${String(amount).replace(/\B(?=(\d{3})+(?!\d))/g, " ")} so‘m`;
 
 export default function TournamentResults() {
-  const [open, setOpen] = useState(true);
+  // Collapsed on the home screen: only the button shows until it is tapped.
+  const [open, setOpen] = useState(false);
 
   return (
     <section aria-labelledby="tournament-results-title" className="space-y-3">
