@@ -33,3 +33,4 @@
 - [x] Admin can create a withdrawal (refund) request by Telegram ID, amount and card; 5-day countdown, no balance deduction, user sees it on login and gets a bot message.
 - [x] Static dist rebuilt with the tournament card (no discount text, no mining, no manager warning); ZIP delivered as lootzy-dist-v3.zip.
 - [x] Doniyorbek and Guli logos swapped to the correct owners; tournament section stays a compact "Turnir yakunlandi" button on the home screen with details inside; 90 tests passed and collapsed/expanded rendering plus photo pairing checked.
+- [x] Replaced "Turnir yakunlandi" with the red cartoon "Mega Turnir" banner (350k / 250k / 150k so'm prizes, 20 Nov 21:00 draw, direct-to-card payout by 22:00, Pink Case entry rule, admin buy link).

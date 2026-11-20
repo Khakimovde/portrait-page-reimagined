@@ -1,88 +1,93 @@
 import { useState } from "react";
-import { CheckCircle2, ChevronDown, ExternalLink, Trophy } from "lucide-react";
+import { ChevronDown, ExternalLink } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import nozaninPhoto from "@/assets/nozanin-abdusattorova.jpeg.asset.json";
-import spiderManPhoto from "@/assets/winner-spiderman.jpeg.asset.json";
-import animeCouplePhoto from "@/assets/winner-anime-couple.jpeg.asset.json";
+import { SUPPORT_URL } from "@/lib/lootzy-rules";
+import Countdown from "./countdown";
+import trophyPng from "@/assets/mega-turnir-trophy.png";
+import pinkCasePng from "@/assets/mega-turnir-pink-case.png";
 
-// Photo pairing verified against the owner's correction (19 Nov 2026):
-// Doniyorbek's logo is the Spider-Man picture, Guli's is the anime couple picture.
-export const TOURNAMENT_WINNERS = [
-  { place: 1, medal: "🥇", name: "Nozanin Abdusattorova", telegramId: 5837291046, prizeSom: 200_000, photo: nozaninPhoto.url },
-  { place: 2, medal: "🥈", name: "Doniyorbek", telegramId: 9274618350, prizeSom: 100_000, photo: spiderManPhoto.url },
-  { place: 3, medal: "🥉", name: "Guli 🤍", telegramId: 6148392751, prizeSom: 50_000, photo: animeCouplePhoto.url },
+export const MEGA_TURNIR_DRAW_AT = "2026-11-20T21:00:00+05:00";
+
+export const MEGA_TURNIR_PRIZES = [
+  { place: 1, medal: "🥇", prizeSom: 350_000, cardClass: "mega-prize-1" },
+  { place: 2, medal: "🥈", prizeSom: 250_000, cardClass: "mega-prize-2" },
+  { place: 3, medal: "🥉", prizeSom: 150_000, cardClass: "mega-prize-3" },
 ] as const;
 
 const formatPrize = (amount: number) => `${String(amount).replace(/\B(?=(\d{3})+(?!\d))/g, " ")} so‘m`;
 
 export default function TournamentResults() {
-  // Collapsed on the home screen: only the button shows until it is tapped.
   const [open, setOpen] = useState(false);
 
   return (
-    <section aria-labelledby="tournament-results-title" className="space-y-3">
+    <section aria-labelledby="mega-turnir-title" className="space-y-3">
       <Button
         variant="ghost"
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
-        aria-controls="tournament-winners"
-        className="btn-blue h-auto w-full items-center gap-3 whitespace-normal rounded-2xl border-2 border-accent p-4 text-left shadow-xl"
+        aria-controls="mega-turnir-details"
+        className="mega-banner h-auto w-full items-center gap-3 whitespace-normal rounded-2xl p-3.5 text-left"
       >
-        <Trophy className="h-9 w-9 shrink-0 txt-gold" aria-hidden="true" />
+        <img
+          src={trophyPng}
+          alt="Mega Turnir kubogi"
+          width={64}
+          height={64}
+          className="h-16 w-16 shrink-0 rounded-xl border-2 border-accent object-cover shadow-md"
+        />
         <span className="min-w-0 flex-1">
-          <b id="tournament-results-title" className="block text-xl">Turnir yakunlandi!</b>
-          <span className="text-xs">G‘oliblar va mukofotlarni ko‘ring</span>
+          <b id="mega-turnir-title" className="mega-title block text-2xl leading-tight">Mega Turnir</b>
+          <span className="mt-0.5 block text-xs font-bold opacity-95">
+            350 000 so‘mgacha yutuq • 20-noyabr 21:00
+          </span>
         </span>
         <ChevronDown className={`shrink-0 transition-transform ${open ? "rotate-180" : ""}`} aria-hidden="true" />
       </Button>
 
       {open && (
-        <div id="tournament-winners" className="lcard space-y-3 p-4">
-          <div className="rounded-xl bg-green-soft p-3 text-center">
-            <b className="flex items-center justify-center gap-2 text-sm k-green">
-              <CheckCircle2 size={20} aria-hidden="true" /> Haqqoniy va adolatli yakunlandi
-            </b>
-            <p className="mt-1 text-xs">G‘oliblar rasmiy kanalimizda tasodifiy tanlov — random orqali aniqlandi.</p>
+        <div id="mega-turnir-details" className="mega-card space-y-3 rounded-2xl p-4">
+          <div className="flex items-center justify-between gap-2 rounded-xl bg-red-soft px-3 py-2 text-xs font-extrabold k-red">
+            <span>👑 20-noyabr 21:00 da aniqlanadi</span>
+            <Countdown deadline={MEGA_TURNIR_DRAW_AT} expired="Aniqlanmoqda" />
           </div>
 
           <div className="space-y-2">
-            {TOURNAMENT_WINNERS.map((winner) => (
-              <article key={winner.telegramId} className={`flex items-center gap-3 rounded-2xl border p-3 ${winner.place === 1 ? "bg-gold-soft" : "bg-card"}`}>
-                <div className="relative shrink-0">
-                  <img
-                    src={winner.photo}
-                    alt={`${winner.name} profil rasmi`}
-                    className="h-16 w-16 rounded-full border-2 border-accent object-cover"
-                    width={64}
-                    height={64}
-                    loading="lazy"
-                  />
-                  <span className="absolute -bottom-1 -right-1 text-2xl" aria-label={`${winner.place}-o‘rin`}>{winner.medal}</span>
-                </div>
-                <div className="min-w-0 flex-1">
-                  <span className="text-xs font-bold text-muted-foreground">{winner.place}-o‘rin</span>
-                  <h3 className="break-words text-base font-extrabold">{winner.name}</h3>
-                  <p className="text-xs text-muted-foreground">ID: {winner.telegramId}</p>
-                </div>
-                <div className="shrink-0 text-right">
-                  <span className="block text-[10px] font-bold text-muted-foreground">Mukofot</span>
-                  <b className="text-sm k-blue">{formatPrize(winner.prizeSom)}</b>
-                </div>
-              </article>
+            {MEGA_TURNIR_PRIZES.map((item) => (
+              <div key={item.place} className={`flex items-center justify-between gap-3 rounded-2xl px-3.5 py-2.5 ${item.cardClass}`}>
+                <span className="flex items-center gap-2 text-sm font-extrabold">
+                  <span className="text-2xl" aria-hidden="true">{item.medal}</span>
+                  <span>{item.place}-o‘rin uchun</span>
+                </span>
+                <b className="text-base font-black k-red">{formatPrize(item.prizeSom)}</b>
+              </div>
             ))}
           </div>
 
-          <p className="rounded-xl bg-blue-soft p-3 text-center text-sm font-bold">
-            🎉 Barcha mukofotlar g‘oliblarga tarqatildi. G‘oliblarni chin dildan tabriklaymiz!
-          </p>
+          <div className="rounded-xl bg-green-soft p-3 text-xs font-bold leading-relaxed">
+            👑 Mukofot 20-noyabr 21:00 da aniqlanadi va 22:00 gacha yutuqlar kartangizga o‘tkaziladi. Turnir yutuqlari balansingizga qo‘shilib uni yechishga berishingiz shart emas — g‘olib aniqlangach to‘g‘ridan-to‘g‘ri kartangizga to‘lab beriladi. ✅
+          </div>
+
+          <div className="flex items-center gap-3 rounded-2xl border-2 border-border bg-pink-soft p-3">
+            <img
+              src={pinkCasePng}
+              alt="Pink case"
+              width={64}
+              height={64}
+              className="h-16 w-16 shrink-0 rounded-xl object-cover shadow"
+            />
+            <p className="min-w-0 flex-1 text-xs font-bold leading-relaxed">
+              ⚠️ Turnirda qatnashish uchun kamida 1 ta Pink case sotib olasiz. Uning ichidan 60 mingdan 120 minggacha yechib olasiz, undan tashqari turnirda ishtirokchi bo‘lasiz.
+            </p>
+          </div>
+
           <a
-            href="https://t.me/Lootzy_en"
+            href={SUPPORT_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-1 text-center text-xs font-bold k-blue underline"
+            className="btn-red flex w-full items-center justify-center gap-2 rounded-2xl px-4 py-3.5 text-center text-base font-extrabold"
           >
-            Natijalar e’lon qilingan rasmiy kanal <ExternalLink size={13} aria-hidden="true" />
+            Sotib olish <ExternalLink size={16} aria-hidden="true" />
           </a>
         </div>
       )}

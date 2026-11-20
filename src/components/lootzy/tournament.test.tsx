@@ -2,58 +2,49 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 
-import { TOURNAMENT_WINNERS } from "./tournament";
-import TournamentResults from "./tournament";
-import spiderManPhoto from "@/assets/winner-spiderman.jpeg.asset.json";
-import animeCouplePhoto from "@/assets/winner-anime-couple.jpeg.asset.json";
+import TournamentResults, { MEGA_TURNIR_DRAW_AT, MEGA_TURNIR_PRIZES } from "./tournament";
+import { SUPPORT_URL } from "@/lib/lootzy-rules";
 
 afterEach(cleanup);
 
-describe("completed tournament winners", () => {
+describe("Mega Turnir prizes and schedule", () => {
   it.each([
-    [1, "Nozanin Abdusattorova", 5837291046, 200_000],
-    [2, "Doniyorbek", 9274618350, 100_000],
-    [3, "Guli 🤍", 6148392751, 50_000],
-  ])("records place %i with the supplied winner and prize", (place, name, telegramId, prizeSom) => {
-    const winner = TOURNAMENT_WINNERS.find((entry) => entry.place === place);
+    [1, 350_000],
+    [2, 250_000],
+    [3, 150_000],
+  ])("sets place %i prize to %i so'm", (place, prizeSom) => {
+    const entry = MEGA_TURNIR_PRIZES.find((item) => item.place === place);
 
-    expect(winner).toMatchObject({ name, telegramId, prizeSom });
-    expect(winner?.photo).toMatch(/\.jpeg$/);
+    expect(entry?.prizeSom).toBe(prizeSom);
   });
 
-  it("keeps exactly three ranked winners", () => {
-    expect(TOURNAMENT_WINNERS.map((winner) => winner.place)).toEqual([1, 2, 3]);
-    expect(new Set(TOURNAMENT_WINNERS.map((winner) => winner.telegramId)).size).toBe(3);
-  });
-
-  it("shows Doniyorbek the Spider-Man logo and Guli the anime couple logo", () => {
-    const doniyorbek = TOURNAMENT_WINNERS.find((entry) => entry.place === 2);
-    const guli = TOURNAMENT_WINNERS.find((entry) => entry.place === 3);
-
-    expect(doniyorbek?.photo).toBe(spiderManPhoto.url);
-    expect(guli?.photo).toBe(animeCouplePhoto.url);
-    expect(doniyorbek?.photo).not.toBe(guli?.photo);
+  it("schedules the draw for 20 November 2026 at 21:00 Tashkent time", () => {
+    expect(MEGA_TURNIR_DRAW_AT).toBe("2026-11-20T21:00:00+05:00");
   });
 });
 
-describe("tournament section on the home screen", () => {
-  it("keeps only the button visible until it is pressed", () => {
+describe("Mega Turnir banner on the home screen", () => {
+  it("stays collapsed until tapped, then shows prizes, rules and admin buy link", () => {
     render(<TournamentResults />);
 
-    const button = screen.getByRole("button", { name: /Turnir yakunlandi/i });
+    const button = screen.getByRole("button", { name: /Mega Turnir/i });
     expect(button.getAttribute("aria-expanded")).toBe("false");
-    expect(document.getElementById("tournament-winners")).toBe(null);
-    expect(screen.queryByText("Doniyorbek")).toBe(null);
+    expect(document.getElementById("mega-turnir-details")).toBe(null);
+    expect(screen.queryByText(/Turnir yakunlandi/i)).toBe(null);
 
     fireEvent.click(button);
 
     expect(button.getAttribute("aria-expanded")).toBe("true");
-    const panel = document.getElementById("tournament-winners");
+    const panel = document.getElementById("mega-turnir-details");
     expect(panel).not.toBe(null);
-    expect(panel?.textContent).toContain("Doniyorbek");
-    expect(panel?.textContent).toContain("Guli");
-    expect(panel?.textContent).toContain("200 000 so‘m");
-    expect(panel?.textContent).toContain("100 000 so‘m");
-    expect(panel?.textContent).toContain("50 000 so‘m");
+    expect(panel?.textContent).toContain("350 000 so‘m");
+    expect(panel?.textContent).toContain("250 000 so‘m");
+    expect(panel?.textContent).toContain("150 000 so‘m");
+    expect(panel?.textContent).toContain("20-noyabr 21:00");
+    expect(panel?.textContent).toContain("22:00");
+    expect(panel?.textContent).toContain("Pink case");
+
+    const buyLink = screen.getByRole("link", { name: /Sotib olish/i });
+    expect(buyLink.getAttribute("href")).toBe(SUPPORT_URL);
   });
 });
