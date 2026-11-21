@@ -35,3 +35,5 @@
 - [x] Doniyorbek and Guli logos swapped to the correct owners; tournament section stays a compact "Turnir yakunlandi" button on the home screen with details inside; 90 tests passed and collapsed/expanded rendering plus photo pairing checked.
 - [x] Replaced "Turnir yakunlandi" with the red cartoon "Mega Turnir" banner (350k / 250k / 150k so'm prizes, 20 Nov 21:00 draw, direct-to-card payout by 22:00, Pink Case entry rule, admin buy link).
 - [x] Static dist rebuilt with the Mega Turnir banner; banner keeps its red look when focused/expanded; ZIP delivered as lootzy-dist-v5.zip.
+- [x] Marked Mega Turnir completed with Рахимова (483715926), 𓆩𝑵𝒊𝒈𝒊𝒏𝒂𓆪 🦋 (927461583) and C💙 (619283745), supplied photos, 350,000/250,000/150,000 so'm prizes, fair channel random draw and distributed-prize notices; 88 tests passed and mobile collapsed/expanded rendering checked.
+- [ ] Pause withdrawal-request countdowns while the user is outside the app and resume them on return (previous request interrupted before implementation).
